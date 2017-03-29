@@ -1,0 +1,6 @@
+ofxAudioAnalyzer
+ofxDatGui
+ofxFadecandy
+ofxMidi
+ofxOpenCv
+ofxXmlSettings
