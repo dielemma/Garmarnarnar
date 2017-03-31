@@ -195,6 +195,7 @@ void ofApp::draw(){
 	ofDrawRectangle(paletteBox);
 	ofDrawRectangle(midiControlBox);
 	ofDrawRectangle(effectInfoBox);
+	ofDrawRectangle(soundBox);
 
 	
 	/// Audio controller
