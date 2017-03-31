@@ -2,5 +2,6 @@ ofxAudioAnalyzer
 ofxDatGui
 ofxFadecandy
 ofxMidi
-ofxOpenCv
+#ofxOpenCv
 ofxXmlSettings
+ofxMSAInteractiveObject

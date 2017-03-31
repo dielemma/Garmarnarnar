@@ -10,3 +10,4 @@ void vizFBO::draw()
 
 	fbo.draw(pos.x, pos.y, size.x, size.y);	
 }
+

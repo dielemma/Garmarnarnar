@@ -2,16 +2,19 @@
 #define Effect_shader_hpp
 
 #include <stdio.h>
-#include "ofMain.h"
+// #include "ofMain.h"
 #include "Effect_base.h"
+#include "ofxMSAInteractiveObject.h"
 
-class Effect_shader: public Effect_base
+class Effect_shader:  public ofxMSAInteractiveObject, public Effect_base  
 {
 
 public:
-	Effect_shader( string name, ofPoint size, vector<ofColor> colors, ofPoint position, ofPoint scale )
+
+	Effect_shader( ofApp* parent, string name, ofPoint position, ofPoint size, vector<ofColor> colors, ofPoint scale ) : Effect_base(parent, name)
 	{
-		this-> name = name;
+		ofLog(OF_LOG_NOTICE,"ESname="+name);
+
 		shader.load(name);
 
 		this-> colors = colors; // copy by value
@@ -19,6 +22,10 @@ public:
 		this-> previewPosition = position * scale / 100.0;
 		this-> previewSize = size * scale / 100.0;
 
+		// set ofxMSAInteractiveObject parameters
+		set(previewPosition.x, previewPosition.y, previewSize.x, previewSize.y);		
+		pressedIn = false;
+	
 		// default brightness
 		brightness = 1.0;
 
@@ -26,24 +33,50 @@ public:
 		fbo.allocate(previewSize.x, previewSize.y, GL_RGBA);
 		fbo.begin();
 		
-		this->update(1.0, previewSize);
+		this->updateEffect(1.0, previewSize);
 
 		fbo.end();
 
-		isActive = false;
 		isSelected = false;
-		speed = 0;
-		showPreview = false;
+		isActive = false;
 
 	};
 
-	void draw();
-	void update(float time, ofPoint drawSize);
-	void updateSelf(float time, ofPoint drawSize);
+	~Effect_shader(){};
+
+	
+	void setup()
+	{
+		enableMouseEvents();
+	};
+	void draw()
+	{
+
+	};
+	// needed to avoid vtable horseshit
+	void exit()
+	{
+
+	};
+
+	void drawPreview();
+	void updateEffect(float time, ofPoint drawSize) override;
+	
+
+	void updatePreview(float time, ofPoint drawSize);
 	bool mouseClick(int x, int y);
 
 
-	string name;
+	// interactivity methods
+	bool pressedIn;
+	void onRollOver(int x, int y) override;
+	void onRollOut() override;
+	void onPress(int x, int y, int button) override;
+	void onRelease(int x, int y, int button) override;
+	void onReleaseOutside(int x, int y, int button) override;
+
+
+
 	ofPoint previewPosition;
 	ofPoint previewSize;
 	bool showPreview;
@@ -53,6 +86,11 @@ public:
 	// fbo for previewing shader
 	ofFbo fbo;
 	ofShader shader;
+
+	// bool isActive;
+	// bool isSelected;
+	// float speed;
+	// float brightness;
 	
 
 private:
