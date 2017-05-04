@@ -17,14 +17,14 @@ void Effect_shader::updateEffect( float time, ofPoint drawSize)
 	// param type
 	// param name
 
-	shader.setUniform1f("time",time);
+	shader.setUniform1f("time",time*speed);
 	shader.setUniform2f("WindowSize", drawSize.x, drawSize.y);
 	for (uint i=0; i<colors.size(); i++)
 	{
 		const string cname = "colour" + ofToString(i+1);
 		shader.setUniform4f(cname, colors[i].r, colors[i].g, colors[i].b, colors[i].a);			
 	}
-	//shader.setUniform1f("mastBright", brightness);
+	shader.setUniform1f("mastBright", brightness);
 
 
 	ofDrawRectangle(0, 0, drawSize.x, drawSize.y);

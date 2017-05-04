@@ -30,10 +30,12 @@ void AudioControl::setup(const ofRectangle &r)
     graphHigh.assign(graphMaxSize, 0.0);
     graphRMS.assign(graphMaxSize, 0.0);
     
+
     gainLow = 1;
     gainMid = 1;
     gainHigh = 1;
     gainRMS = 1;
+
     
     vertOffsetLow = 0;
     vertOffsetMid = 0;

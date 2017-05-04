@@ -17,6 +17,8 @@ struct thresholdTrigger{
     ofEvent<float> aboveThreshold;
     
     thresholdTrigger(){
+        threshold = 1;
+        timeFrame = 200;
         lastTimeTriggered = ofGetElapsedTimeMillis();
         triggered = false;
     }
@@ -92,6 +94,16 @@ public:
     float  avgMid;
     float  avgHigh;
     
+    float gainLow;
+    float gainMid;
+    float gainHigh;
+    float gainWaveform;
+    
+    float vertOffsetLow;
+    float vertOffsetMid;
+    float vertOffsetHigh;
+    float vertOffsetWaveform;
+    
     vector<float> graphLow;
     vector<float> graphMid;
     vector<float> graphHigh;
@@ -102,9 +114,14 @@ public:
 	vector <float> rightChan;
 	vector <float> rightAmp;
 	vector <float> volHist;
+    
+    thresholdTrigger lowTrigger;
+    thresholdTrigger midTrigger;
+    thresholdTrigger highTrigger;
+    thresholdTrigger waveformTrigger;
 
 	void onDropdownEvent(ofxDatGuiDropdownEvent e);
-    void drawAvgGraph(int x, int y, vector<float> values, ofColor _color);
+    void drawAvgGraph(int x, int y, vector<float> values, ofColor _color, float gain, float offset, float threshold);
 
 
 };

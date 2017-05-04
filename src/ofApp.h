@@ -16,7 +16,12 @@
 class ofApp : public ofBaseApp, public ofxMidiListener{
 
 	public:
-
+		int shapeCase;
+		ofColor dColor;
+		bool debugCircle;
+		bool simpleSound;
+		vector<ofColor> dColors;
+		int dcolID;
 		// MyTestObject obj;
 
 		void setup();
