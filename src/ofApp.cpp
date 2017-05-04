@@ -5,6 +5,18 @@ string knobNames[] = { "eqHi1", "eqMid1", "eqLow1", "eqHi2", "eqMid2", "eqLow2" 
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	debugCircle = false;
+	simpleSound = false;
+	shapeCase=1;
+	dColors.push_back(ofColor(255,0,0));
+	dColors.push_back(ofColor(255));
+	dColors.push_back(ofColor(46,140,90));
+	dColors.push_back(ofColor(255,99,71));
+	dColors.push_back(ofColor(430,144,255));
+	dColors.push_back(ofColor(138,43,226));
+	dColors.push_back(ofColor(169,169,169));
+	dcolID = 0;
+
 
 	//obj.set(100, 50, 100, 200);
 
@@ -124,11 +136,26 @@ void ofApp::setup(){
 
 	/////////////////////////////////////////////////////////////////////////////
 	// SHADERS /////////////////////////////
+	// **TODO: these should be loaded at runtime from a config XML
 	vector<ofColor> colorVect;
-	colorVect.push_back(ofColor::red);
-	colorVect.push_back(ofColor::blue);
+	colorVect.push_back(ofColor(80,12,60));
+	colorVect.push_back(ofColor(19,85,189));
 	effect_shaders.push_back(make_shared<Effect_shader>(this, "fire", ofPoint(0,8), ofPoint(20,20), colorVect, ledFrame.size));
-	effect_shaders.push_back(make_shared<Effect_shader>(this, "clouds", ofPoint(28,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "clouds", ofPoint(20,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "psychNoise", ofPoint(40,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders[effect_shaders.size()-1]->speed = 0.4;
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "lightning", ofPoint(60,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders[effect_shaders.size()-1]->speed = 0.5;
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "vortex", ofPoint(80,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders[effect_shaders.size()-1]->speed = 0.5;
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "interferingWaves", ofPoint(100,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders[effect_shaders.size()-1]->speed = 0.5;
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "horizontalWave", ofPoint(120,8), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "SF2D", ofPoint(0,28), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "SF2D_2", ofPoint(20,28), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "SF2D_3", ofPoint(40,28), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "bluefire", ofPoint(60,28), ofPoint(20,20), colorVect, ledFrame.size));
+	effect_shaders.push_back(make_shared<Effect_shader>(this, "purplefire", ofPoint(80,28), ofPoint(20,20), colorVect, ledFrame.size));
 	// effect_shaders.push_back(make_shared<Effect_shader>(this, "lightning", ofPoint(48,8), ofPoint(20,20), colorVect, ledFrame.size));
 	// effect_shaders.push_back(make_shared<Effect_shader>(this, "strobe", ofPoint(68,8), ofPoint(20,20), colorVect, ledFrame.size));
 	// ofLog(OF_LOG_NOTICE,"Created: "+ effect_shaders[0]->name);
@@ -180,6 +207,14 @@ void ofApp::update(){
 	{
 		active_effects[i]->brightness *= effectLevels[i];
 	}
+
+	if (simpleSound && ac.avgHigh < ac.highTrigger.threshold)
+	{
+		if(active_effects.size()>0)
+		{
+			active_effects[0]->brightness = 0;
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -212,9 +247,25 @@ void ofApp::draw(){
 		ofBackground(0);
 		
 		// dim the effect
+		active_effects[i]->brightness = 1.0;
 		active_effects[i]->updateEffect(ofGetElapsedTimef() * pow(10,timeMult), ledFrame.size);
 		ofEnableBlendMode(OF_BLENDMODE_SUBTRACT);		
-		int tmpAlpha = (int)255 * (1.0 - effectLevels[i]);
+		
+		int tmpAlpha;
+		if (i==0 && simpleSound)
+		{
+			tmpAlpha = 255;
+			if (ac.avgHigh > ac.highTrigger.threshold )
+			{
+				tmpAlpha = (int)255 * (1.0 - ac.avgHigh*effectLevels[i]);
+			}
+
+		}
+		else
+		{
+			tmpAlpha = (int)255 * (1.0 - effectLevels[i]);
+		}
+
 		ofSetColor(255,255,255,tmpAlpha);
 		ofFill();
 		ofDrawRectangle(0, 0, ledFrame.size.x, ledFrame.size.y);
@@ -234,6 +285,43 @@ void ofApp::draw(){
 		effectRenderFrames[i].draw();
 	}
 
+	if (debugCircle && mouseY < ledBox.height)
+	{		
+
+
+
+		ofSetColor(dColors[dcolID]);
+		ofFill;
+
+		if (shapeCase ==1)
+		{
+			ofDrawCircle(mouseX-ledBox.x,mouseY,42);
+		}
+		if (shapeCase ==2)
+		{
+			ofDrawCircle(mouseX-ledBox.x,mouseY,84);
+		}
+		if (shapeCase ==3)
+		{
+			ofDrawRectangle(mouseX-ledBox.x,ledBox.y,40,ledBox.height);
+		}
+		if (shapeCase ==4)
+		{
+			ofDrawRectangle(mouseX-ledBox.x,ledBox.y,60,ledBox.height);
+		}
+		if (shapeCase ==5)
+		{
+			ofDrawRectangle(mouseX-ledBox.x,ledBox.y,80,ledBox.height);
+		}
+		if (shapeCase ==6)
+		{
+			ofDrawRectangle(mouseX-ledBox.x,ledBox.y,40,ledBox.height);
+			ofDrawRectangle(mouseX-ledBox.x + 120,ledBox.y,40,ledBox.height);
+			ofDrawRectangle(mouseX-ledBox.x + 240,ledBox.y,40,ledBox.height);
+		}
+
+	}
+
 	// dim the total result
 	ofEnableBlendMode(OF_BLENDMODE_SUBTRACT);
 	masterBrightness = max(0.0,min(1.0,masterBrightness));
@@ -243,11 +331,14 @@ void ofApp::draw(){
 	ofDrawRectangle(0, 0, ledFrame.size.x, ledFrame.size.y);
 	ofDisableBlendMode();
 
+
+
 	ledFrame.fbo.end();
 	
 	ledFrame.draw();
-
-	
+	ofSetColor(dColors[dcolID]);
+	ofFill();
+	ofDrawRectangle(0,0,100,100);
 
 	// LED PREVIEW ////////////////////////////////////////
 	ledPreviewFrame.fbo.begin();
@@ -285,7 +376,7 @@ void ofApp::draw(){
 	ofSetColor(255,20,20);
 	for (uint i=0; i<effectLevels.size(); i++)
 	{
-		ofDrawBitmapString("Effect "+ofToString(i+1)+" Brightness:" + ofToString(round(effectLevels[0]*1000)/1000), 4, y0);
+		ofDrawBitmapString("Effect "+ofToString(i+1)+" Brightness:" + ofToString(round(effectLevels[i]*1000)/1000), 4, y0);
 		ofDrawRectangle(0,y0+10,ofMap(effectLevels[i],0,1,0,midiControlBox.width),15);
 		y0 += 65;
 	}
@@ -311,9 +402,20 @@ void ofApp::draw(){
 	effectInfoFrame.fbo.end();
 	effectInfoFrame.draw();
 
+	if (ac.avgHigh > ac.highTrigger.threshold )
+	{
+		ofFill();
+		ofSetColor(0,255,0);
+		ofDrawRectangle(100,400,100,100);
+	}
+
+	ofDrawBitmapString("SimpleSound="+ofToString(simpleSound),10,10);
+
 	fc.write(fc.allLEDcolors);
 }// END DRAW
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
 bool ofApp::activateEffect(shared_ptr<Effect_base> effect)
@@ -323,7 +425,7 @@ bool ofApp::activateEffect(shared_ptr<Effect_base> effect)
 		active_effects.push_back( effect);
 		effect -> activeID = active_effects.size() - 1;
 		ofLog(OF_LOG_NOTICE,"effect name:"+effect->name);
-		ofLog(OF_LOG_NOTICE,"effect ID:"+effect->activeID);
+		ofLog(OF_LOG_NOTICE,"effect ID:"+ofToString(effect->activeID));
 		return true;
 	}
 	return false;
@@ -412,7 +514,62 @@ void ofApp::newMidiMessage(ofxMidiMessage& msg) {
 void ofApp::keyPressed(int key){
 	if (key == OF_KEY_F11)
 	{
-		ofToggleFullscreen();
+		// ofToggleFullscreen();
+	}
+	if (key == 'd')
+	{
+		debugCircle = !debugCircle;
+	}
+	if (key == OF_KEY_DOWN)
+	{
+		ac.highTrigger.threshold-=0.01;
+	}
+	if (key == OF_KEY_UP)
+	{
+		ac.highTrigger.threshold+=0.01;
+	}
+	if (key == OF_KEY_LEFT)
+	{
+		ac.gainHigh-=0.1;
+	}
+	if (key == OF_KEY_RIGHT)
+	{
+		ac.gainHigh+=0.1;
+	}
+
+	if (key == 'm')
+	{
+		simpleSound = !simpleSound;
+	}
+
+	if (key == '1')
+	{
+		shapeCase =1;
+	}
+	if (key == '2')
+	{
+		shapeCase =2;
+	}
+	if (key == '3')
+	{
+		shapeCase =3;
+	}
+	if (key == '4')
+	{
+		shapeCase =4;
+	}
+	if (key == '5')
+	{
+		shapeCase =5;
+	}
+	if (key == '6')
+	{
+		shapeCase =6;
+	}
+	if (key == 'c')
+	{
+		dcolID++;
+		dcolID = dcolID%dColors.size();
 	}
 }
 

@@ -39,6 +39,7 @@ public:
 
 		isSelected = false;
 		isActive = false;
+		speed = 1;
 
 	};
 
