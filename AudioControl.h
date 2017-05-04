@@ -44,9 +44,72 @@ struct thresholdTrigger{
     }
 };
 
+struct freqRange{
+    int lowerBound, upperBound, midpoint, maxUpper;
+
+    freqRange():lowerBound(0), upperBound(2), maxUpper(2){}
+    
+    void setup(int l, int u, int m) {
+        lowerBound = l;
+        upperBound = u;
+        maxUpper = m;
+        if(l > u){
+            throw std::invalid_argument("lowerBound must be less than or equal to upperBound");
+        }
+        else if(u > m){
+            throw std::invalid_argument("upperBound must be less than or equal to maxUpper");
+        }
+    }
+    
+    void shiftRight(){
+        if(maxUpper - upperBound > 1){
+            lowerBound+=2;
+            upperBound+=2;
+        }
+        else if (maxUpper - upperBound == 1){
+            lowerBound++;
+            upperBound++;
+        }
+    }
+    
+    void shiftLeft(){
+        if(lowerBound > 1){
+            lowerBound-=2;
+            upperBound-=2;
+        }
+        else if (lowerBound == 1) {
+            lowerBound--;
+            upperBound--;
+        }
+    }
+    
+    void grow(){
+        if(upperBound==maxUpper){
+            lowerBound -= 2;
+        }
+        else if(lowerBound==0){
+            upperBound += 2;
+        }
+        else{
+            lowerBound--;
+            upperBound++;
+        }
+    }
+    
+    void shrink(){
+        if(upperBound - lowerBound > 1){
+            lowerBound++;
+            upperBound--;
+        }
+        else if(upperBound - lowerBound == 1){
+            upperBound--;
+        }
+    }
+    
+};
+
 class AudioControl: public ofBaseApp
 {
-
 public:
 	AudioControl()
 	{		
@@ -78,7 +141,6 @@ public:
 
     ofMesh mesh_rms;
 	
-	float smoothedVol;
 	float scaledVol;
 	float curLeftAmp;
 	float curRightAmp;
@@ -87,7 +149,7 @@ public:
     float smoothing;
     
     float rms;
-    vector<float> melBands;
+    vector<float> spectrum;
 
     
     float  avgLow;
@@ -97,12 +159,12 @@ public:
     float gainLow;
     float gainMid;
     float gainHigh;
-    float gainWaveform;
+    float gainRMS;
     
     float vertOffsetLow;
     float vertOffsetMid;
     float vertOffsetHigh;
-    float vertOffsetWaveform;
+    float vertOffsetRMS;
     
     vector<float> graphLow;
     vector<float> graphMid;
@@ -118,12 +180,14 @@ public:
     thresholdTrigger lowTrigger;
     thresholdTrigger midTrigger;
     thresholdTrigger highTrigger;
-    thresholdTrigger waveformTrigger;
+    thresholdTrigger rmsTrigger;
+    
+    freqRange rangeLow;
+    freqRange rangeMid;
+    freqRange rangeHigh;
 
 	void onDropdownEvent(ofxDatGuiDropdownEvent e);
     void drawAvgGraph(int x, int y, vector<float> values, ofColor _color, float gain, float offset, float threshold);
-
-
 };
 
 #endif
