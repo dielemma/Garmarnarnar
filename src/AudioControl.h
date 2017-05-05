@@ -132,7 +132,9 @@ public:
 	vector<ofSoundDevice> deviceList;
 	ofxDatGuiDropdown* deviceMenu;
     ofxDatGuiButton* bgMeasButton;
+    ofxDatGuiToggle* toggleMel;
     void onButtonEvent(ofxDatGuiButtonEvent e);
+
 
 	int bufferSize;
     int sampleRate;
@@ -151,8 +153,16 @@ public:
     float smoothing;
     
     float rms;
+    float rms_bg;
     vector<float> spectrum;
+    vector<float> spectrum_bg;
+    int N_bg_samp = 100;
+    int i_bg_samp = 100;
 
+    bool useMel = true;
+
+    vector<float> mfcc;
+    vector<float> melBands;
     
     float  avgLow;
     float  avgMid;
@@ -189,6 +199,7 @@ public:
     freqRange rangeHigh;
 
 	void onDropdownEvent(ofxDatGuiDropdownEvent e);
+    void configBreakdowns();
     void drawAvgGraph(int x, int y, vector<float> values, ofColor _color, float gain, float offset, float threshold);
 };
 
