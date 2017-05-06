@@ -51,8 +51,12 @@ void AudioControl::setup(const ofRectangle &r)
     gainMid = 1;
     gainHigh = 1;
     gainRMS = 1;
-
     
+    currentGain = &gainHigh;
+    currentTrigger = &highTrigger;
+    
+    ofAddListener(ofEvents().mousePressed, this, &AudioControl::mousePressed);
+
     vertOffsetLow = 0;
     vertOffsetMid = 0;
     vertOffsetHigh = 0;
@@ -169,7 +173,7 @@ void AudioControl::draw()
 
         ofDrawBitmapString("RMS - g: "+ofToString(gainRMS)+" vo: "+ofToString(vertOffsetRMS)+" th: "+ofToString(rmsTrigger.threshold)+" tf: "+ofToString(rmsTrigger.timeFrame),box.x+275,box.y+200);
     
-        drawAvgGraph(box.x + 250, box.y + 210, graphRMS, ofColor(255, 255, 100,200), gainHigh, vertOffsetHigh, highTrigger.threshold);
+        drawAvgGraph(box.x + 250, box.y + 210, graphRMS, ofColor(255, 255, 100,200), gainRMS, vertOffsetHigh, rmsTrigger.threshold);
     
     /*
 	    ofPushMatrix();
@@ -360,6 +364,31 @@ void AudioControl::drawAvgGraph(int x, int y, vector<float> values, ofColor _col
     // ofDisableBlendMode();
 }
 
+void AudioControl::mousePressed(ofMouseEventArgs& eventArgs){
+    int x = eventArgs.x;
+    int y = eventArgs.y;
+    if(x >= box.x+20 && x <= box.x+220) {
+        if(y >= box.y+60 && y <= box.y+160) {
+            currentGain = &gainLow;
+            currentTrigger = &lowTrigger;
+        }
+        else if(y >= box.y+210 && y <= box.y+310){
+            currentGain = &gainMid;
+            currentTrigger = &midTrigger;
+        }
+    }
+    else if(x >= box.x+250 && x <= box.x+450){
+        if(y >= box.y+60 && y <= box.y+160) {
+            currentGain = &gainHigh;
+            currentTrigger = &highTrigger;
+        }
+        else if(y >= box.y+210 && y <= box.y+310){
+            currentGain = &gainRMS;
+            currentTrigger = &rmsTrigger;
+        }
+    }
+}
+
 void AudioControl::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {
 	try
@@ -441,12 +470,8 @@ void AudioControl::audioIn(ofSoundBuffer &inBuffer)
     //ofLog(OF_LOG_NOTICE,ofToString(rms));
     volHist.erase(volHist.begin(),volHist.begin()+1);
     volHist.push_back(100*curVol);
-
-
-	
     
 	bufferCounter++;
-	
 }
 
 AudioControl::~AudioControl()

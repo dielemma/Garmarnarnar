@@ -522,19 +522,19 @@ void ofApp::keyPressed(int key){
 	}
 	if (key == OF_KEY_DOWN)
 	{
-		ac.highTrigger.threshold-=0.01;
+		ac.currentTrigger->threshold -= 0.1;
 	}
 	if (key == OF_KEY_UP)
 	{
-		ac.highTrigger.threshold+=0.01;
+		ac.currentTrigger->threshold += 0.1;
 	}
 	if (key == OF_KEY_LEFT)
 	{
-		ac.gainHigh-=0.1;
+		*(ac.currentGain) -= 0.1;
 	}
 	if (key == OF_KEY_RIGHT)
 	{
-		ac.gainHigh+=0.1;
+		*(ac.currentGain) += 0.1;
 	}
 
 	if (key == 'm')

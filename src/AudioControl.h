@@ -172,6 +172,8 @@ public:
     float gainMid;
     float gainHigh;
     float gainRMS;
+        
+    float * currentGain;
     
     float vertOffsetLow;
     float vertOffsetMid;
@@ -194,11 +196,14 @@ public:
     thresholdTrigger highTrigger;
     thresholdTrigger rmsTrigger;
     
+    thresholdTrigger * currentTrigger;
+    
     freqRange rangeLow;
     freqRange rangeMid;
     freqRange rangeHigh;
 
 	void onDropdownEvent(ofxDatGuiDropdownEvent e);
+    void mousePressed(ofMouseEventArgs& eventArgs);
     void configBreakdowns();
     void drawAvgGraph(int x, int y, vector<float> values, ofColor _color, float gain, float offset, float threshold);
 };
